@@ -12,12 +12,13 @@ to learn the most important elements of creating an application. After completin
 - how to use machine learning libraries to make predictions
 - how to connect your machine learing device to a web interface
 
-Things To Do
-[ x ] - Vanilla HTML/CSS Example (see index.html)
-[ x ] - Maing your page dynamic with Vue.js (see app.html)
+## Things To Do
+
+- [-] Vanilla HTML/CSS Example (see index.html)
+- [-] Maing your page dynamic with Vue.js (see app.html)
 
 
-Libraries you will learn how to use:
+## Libraries you will learn how to use:
 Uikit - A tool for making your web pages pretty, right from the start.
 Axios - A tool for making requests to other places on the internet, within your application
 ML5 - A tool for working with machine learning in your browser based app.
