@@ -19,6 +19,6 @@ to learn the most important elements of creating an application. After completin
 
 
 ## Libraries you will learn how to use:
-Uikit - A tool for making your web pages pretty, right from the start.
-Axios - A tool for making requests to other places on the internet, within your application
-ML5 - A tool for working with machine learning in your browser based app.
+- Uikit - A tool for making your web pages pretty, right from the start.
+- Axios - A tool for making requests to other places on the internet, within your application
+- ML5 - A tool for working with machine learning in your browser based app.
