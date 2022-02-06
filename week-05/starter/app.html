@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voice recognition on the Arduino</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.10.0/dist/css/uikit.min.css" />
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/uikit@3.10.0/dist/js/uikit.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/uikit@3.10.0/dist/js/uikit-icons.min.js"></script>
+  <script src="https://unpkg.com/p5ble@0.0.7/dist/p5.ble.js"></script>
+</head>
+<body>
+  <div id="app" class="uk-flex uk-flex-column uk-flex-center uk-flex-middle uk-height-viewport uk-background-primary uk-background-cover" :style="backgroundImage">
+    <section>
+        <div class="uk-card uk-card-small uk-card-default uk-border-rounded">
+            <div>
+                <form class="uk-card uk-card-default uk-card-small uk-card-body">
+                    <span :class="['uk-label', statusStyle]">{{ statusText }}</span>
+                    <div class="uk-margin">
+                        <label class="uk-form-label" for="form-stacked-text">Arduino UUID</label>
+                        <div class="uk-form-controls">
+                            <input class="uk-input" type="text" placeholder="serviceUuid" v-model="serviceUuid">
+                        </div>
+                    </div>
+                    <button class="uk-button uk-button-default" @click.prevent="connect" :disabled="!isSupported || isConnected">Connect</button>
+                    <button class="uk-button uk-button-default" @click.prevent="disconnect" :disabled="!isConnected">Disconnect</button>
+                </form>
+            </div>
+        </div>
+    </section>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        ble: null,
+        value: -1,
+        labels: ['digital', 'human'],
+        isSupported: false,
+        isConnected: false,
+        isConnecting: false,
+        serviceUuid: "19b10010-e8f2-537e-4f6c-d104768a1214",
+        inferenceCharacteristic: null,
+        accessToken: "563492ad6f91700001000001fb82554c1e224612b3f77595c26031c0",
+        backgroundUrl: null,
+      },
+      mounted () {
+        // check if our brwoser has bluetooth support
+        this.isSupported = !!navigator.bluetooth
+        // make a new bluetooth object
+        this.ble = new p5ble()
+      },
+      methods: {
+        connect() {
+            // We are trying to connect
+            this.isConnecting = true
+            // Connect to our device by passing the service UUID
+            this.ble.connect(this.serviceUuid, this.gotCharacteristics);
+        },
+        disconnect() {
+            // disconnect from the arduino
+            this.ble.disconnect()
+            // check if arduino is connected
+            this.isConnected = this.ble.isConnected()
+        },
+        onDisconnected() {
+            this.isConnected = false
+            this.value = -1
+        },
+        gotCharacteristics(error, characteristics) {
+            if (error) console.log('error: ', error)
+            // check if we're connected
+            this.isConnected = this.ble.isConnected()
+            // we are not connecting anymore
+            this.isConnecting = (this.isConnected) ? false : true
+            // read values from the first characteristic
+            // we only have one so we pick the first in the array
+            this.inferenceCharacteristic = characteristics[0]
+            this.ble.startNotifications(this.inferenceCharacteristic, this.gotValue)
+            // add event handler when the arduino is disconnected
+            this.ble.onDisconnected(this.onDisconnected)
+        },
+        gotValue(value) {
+          // the value needs to be 0 or 1 as that are the values we send
+          // from the arduino on a successful classification
+          if (value !== -1) {
+            // grab the corresponding label to use as a query for pexels
+            const label = this.labels[value]
+            // make a request to the pexels api to retrieve an image based on
+            // our label
+            axios.get('https://api.pexels.com/v1/search?query=' + label, {
+              headers: {
+                'Authorization': this.accessToken
+              }
+            })
+            .then((res) => {
+              console.log(res.data);
+              // the response from pexels containing photos based on our query
+              const photos = res.data.photos
+              // the amount of the photos we've got from pexels
+              const photosAmount = photos.length
+              // a random number between the first and last image position in the array
+              const randomPhotoIndex = Math.floor(Math.random() * photosAmount)
+              // use the random number to pick a random photo from the photo array
+              this.backgroundUrl = photos[randomPhotoIndex].src.original
+            })
+            .catch((error) => {
+              // tell us is we get an error
+              console.log(error)
+            })
+          }
+        }
+      },
+      computed: {
+          statusText() {
+            // what text do we display given a conditional
+            return this.isConnected
+              ? 'Connected'
+              : (this.isConnecting)
+              ? 'Connecting'
+              : (!this.isSupported)
+              ? 'Unsupported browser'
+              : 'Disconnected'
+          },
+          statusStyle() {
+            // what style do we use given a conditional
+            return this.isConnected
+                ? 'uk-label-success'
+                : (this.isConnecting)
+                ? 'uk-label-warning'
+                : 'uk-label-danger'
+          },
+          backgroundImage() {
+            // the style we need to display a background image
+            // if we have received a background url (link)
+            return (this.backgroundUrl)
+              ? `backgroundImage: url(${this.backgroundUrl})`
+              : null
+          }
+      }
+    })
+  </script>
+</body>
+</html>
