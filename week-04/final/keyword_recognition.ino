@@ -81,18 +81,20 @@ void setup()
     // start arduino ble module
     if (!BLE.begin()) {
         Serial.println("ERR: Starting BLE module failed");
-        while (1);
+        while (1)
+            ;
     }
 
     // set arduino bluetooth name and advertise
     BLE.setLocalName("Nano 33 BLE Sense");
     BLE.setAdvertisedService(inferenceService);
 
+    // add inference characteristic to inference service
     inferenceService.addCharacteristic(inferenceCharacteristic);
-
+    // add the inference service
     BLE.addService(inferenceService);
 
-    //
+    // write default value
     inferenceCharacteristic.writeValue(-1);
 
     // start advertising
@@ -106,7 +108,7 @@ void loop()
 {
 
     BLE.poll();
-    
+
     bool m = microphone_inference_record();
     if (!m) {
         ei_printf("ERR: Failed to record audio...\n");

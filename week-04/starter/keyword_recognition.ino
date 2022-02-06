@@ -89,11 +89,12 @@ void setup()
     BLE.setLocalName("Nano 33 BLE Sense");
     BLE.setAdvertisedService(inferenceService);
 
+    // add inference characteristic to inference service
     inferenceService.addCharacteristic(inferenceCharacteristic);
-
+    // add the inference service
     BLE.addService(inferenceService);
 
-    //
+    // write default value
     inferenceCharacteristic.writeValue(-1);
 
     // start advertising
