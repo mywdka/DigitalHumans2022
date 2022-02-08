@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Digital Humans (2022)</title>
+  <meta name="description" content="Digital Humans (2022)">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.10.0/dist/css/uikit.min.css" />
+  <script src="https://unpkg.com/vue"></script>
+</head>
+<body >
+  <div id="app" class="uk-height-viewport uk-flex uk-flex-column uk-flex-center uk-flex-middle uk-container">
+    <section class="uk-section uk-text-center">
+      <h1>Digital Humans: Course Guide</h1>
+      <p class="uk-text-meta">A overview of the skills you will gain in this track.</p>
+    </section>
+    
+    <div class="uk-grid uk-grid-small uk-child-width-1-2@s">
+      <div v-for="guide in guides" class="uk-margin-small-bottom">
+        <div class="uk-height-small uk-background-muted uk-card-hover uk-border-rounded">
+          <div class="uk-card-body"> 
+            <div> {{ guide.title }} </div>
+            <p> {{ guide.description }}  </p>
+          </div>
+          <div class="uk-card-footer">
+            <div> {{ guide.meta }} </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        message: null,
+        guides: [
+          {
+            title: 'Web fundamentals',
+            description: 'What is a webpage, actually?',
+            tasks: [
+              'Machine Learning for the Web: Classifications'
+            ],
+            meta: 'WH.02.110 Instruction Room IAS'
+          },
+          {
+            title: 'Machine Learning for the Web: Classifications',
+            description: 'What is a webpage, actually?',
+            tasks: [
+              'Machine Learning for the Web: Classifications'
+            ],
+            meta: 'WH.02.110 Instruction Room IAS'
+          },
+          {
+            title: 'Machine Learning for the web: Predictions',
+            description: 'What is a webpage, actually?',
+            tasks: [
+              'Machine Learning for the Web: Classifications'
+            ],
+            meta: 'WH.02.110 Instruction Room IAS'
+          },
+          {
+            title: 'Voice recognition on the Arduino',
+            description: 'What is a webpage, actually?',
+            tasks: [
+              'Machine Learning for the Web: Classifications'
+            ],
+            meta: 'WH.02.110 Instruction Room IAS'
+          }
+        ]
+      },
+      methods: {
+        addMessageToMessages() {
+            const trimmedMessage = this.message.trim()
+            const messageIsNotEmpty = trimmedMessage > 0
+            const fireThisFunction = this.messages.push( this.message )
+            if( messageIsNotEmpty ) {
+                fireThisFunction
+            }
+        },
+        removeMessageFromMessages(messageKey) {
+            // const messagetoDelete = this.messages[messageKey]
+            const messageExists = messageKey > -1
+            if ( messageExists ) {
+                this.messages.splice(messageKey, 1);
+            }
+        }
+      }
+    })
+  </script>
+</body>
+</html>
